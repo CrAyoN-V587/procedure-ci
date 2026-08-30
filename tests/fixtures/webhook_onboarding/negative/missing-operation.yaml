@@ -1,0 +1,13 @@
+arazzo: 1.1.0
+info:
+  title: Invalid webhook workflow
+  version: 1.0.0
+sourceDescriptions:
+  - name: webhooks
+    url: ./openapi.yaml
+    type: openapi
+workflows:
+  - workflowId: invalidWebhookOnboarding
+    steps:
+      - stepId: missingOperation
+        operationId: $sourceDescriptions.webhooks.operationThatDoesNotExist

@@ -1,0 +1,48 @@
+arazzo: 1.1.0
+info:
+  title: Webhook onboarding workflow
+  version: 1.0.0
+sourceDescriptions:
+  - name: webhooks
+    url: ./openapi.yaml
+    type: openapi
+workflows:
+  - workflowId: webhookOnboarding
+    summary: Register, test, inspect, and optionally delete a webhook
+    steps:
+      - stepId: createSubscription
+        operationId: $sourceDescriptions.webhooks.createWebhookSubscription
+        requestBody:
+          contentType: application/json
+          payload:
+            url: https://example.test/hooks
+            eventTypes: [push]
+        outputs:
+          webhookId: $response.body#/id
+      - stepId: sendTest
+        operationId: $sourceDescriptions.webhooks.sendTestEvent
+        parameters:
+          - name: webhookId
+            in: path
+            value: $steps.createSubscription.outputs.webhookId
+        requestBody:
+          contentType: application/json
+          payload:
+            event: smoke-test
+        outputs:
+          deliveryId: $response.body#/deliveryId
+      - stepId: inspectDelivery
+        operationId: $sourceDescriptions.webhooks.getWebhookDelivery
+        parameters:
+          - name: webhookId
+            in: path
+            value: $steps.createSubscription.outputs.webhookId
+          - name: deliveryId
+            in: path
+            value: $steps.sendTest.outputs.deliveryId
+      - stepId: deleteSubscription
+        operationId: $sourceDescriptions.webhooks.deleteWebhookSubscription
+        parameters:
+          - name: webhookId
+            in: path
+            value: $steps.createSubscription.outputs.webhookId

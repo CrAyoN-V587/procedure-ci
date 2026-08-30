@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: Webhook API
+  version: 1.0.0
+paths:
+  /webhooks:
+    post:
+      operationId: createWebhookSubscription
+      summary: Create a webhook subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookSubscription'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+      security:
+        - apiKey: []
+  /webhooks/{webhookId}/test:
+    post:
+      operationId: sendTestEvent
+      summary: Send a test event
+      parameters:
+        - $ref: '#/components/parameters/WebhookId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestEvent'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestAccepted'
+      security:
+        - apiKey: []
+  /webhooks/{webhookId}/deliveries/{deliveryId}:
+    get:
+      operationId: getWebhookDelivery
+      summary: Get a webhook delivery
+      parameters:
+        - $ref: '#/components/parameters/WebhookId'
+        - $ref: '#/components/parameters/DeliveryId'
+      responses:
+        '200':
+          description: Delivery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delivery'
+      security:
+        - apiKey: []
+  /webhooks/{webhookId}:
+    delete:
+      operationId: deleteWebhookSubscription
+      summary: Delete a webhook subscription
+      parameters:
+        - $ref: '#/components/parameters/WebhookId'
+      responses:
+        '204':
+          description: Deleted
+      security:
+        - apiKey: []
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        '200':
+          description: Healthy
+components:
+  parameters:
+    WebhookId:
+      name: webhookId
+      in: path
+      required: true
+      schema:
+        type: string
+    DeliveryId:
+      name: deliveryId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    WebhookSubscription:
+      type: object
+      required: [url, eventTypes]
+      properties:
+        url:
+          type: string
+          format: uri
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventType'
+    EventType:
+      type: string
+      enum: [push, pull]
+    Subscription:
+      type: object
+      required: [id, url, eventTypes]
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventType'
+    TestEvent:
+      type: object
+      required: [event]
+      properties:
+        event:
+          type: string
+    TestAccepted:
+      type: object
+      required: [deliveryId]
+      properties:
+        deliveryId:
+          type: string
+    Delivery:
+      type: object
+      required: [id, status]
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, delivered, failed]
+        payload:
+          type: object
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
