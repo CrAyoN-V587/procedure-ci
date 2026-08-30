@@ -24,7 +24,8 @@ base/head OpenAPI + current Arazzo
 - 输出：稳定 JSON/Markdown，退出码 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）；
 - 边界：离线、只读、内部 `$ref`、OpenAPI 3.1、Arazzo 1.1.x 的 operationId 同步子集；
   source description 必须唯一、类型为 `openapi`，且有合法名称和非空 URL；
-- 当前已初始化本地 Git 仓库；尚未配置远程仓库，也未实现 GitHub Action、API 服务或真实 API 执行。
+- 公开仓库目标：[`CrAyoN-V587/procedure-ci`](https://github.com/CrAyoN-V587/procedure-ci)；
+  尚未实现 GitHub Action、API 服务或真实 API 执行。
 
 ## 本地运行
 
@@ -64,3 +65,7 @@ Webhook onboarding 夹具覆盖无关变化、嵌套引用、必填字段、认�
 - [docs/PROGRESS.md](docs/PROGRESS.md)：可恢复的实现进度和实际验证记录；
 - [docs/decisions/0001-use-arazzo.md](docs/decisions/0001-use-arazzo.md)：采用 Arazzo、放弃自定义 IR 的决策。
 - [docs/decisions/0002-three-input-current-arazzo.md](docs/decisions/0002-three-input-current-arazzo.md)：固定三输入和当前 Arazzo 语义的决策。
+
+## License
+
+[MIT](LICENSE)

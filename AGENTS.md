@@ -58,7 +58,23 @@
 
 ## Git
 
-- 当前目录已初始化为本地 Git 仓库，分支为 `main`；尚未配置远程仓库。
-- 严格 MVP 源码、测试和设计文档已形成首个可验证里程碑提交。
+- 当前目录已初始化为本地 Git 仓库，分支为 `main`；目标公开仓库为
+  `https://github.com/CrAyoN-V587/procedure-ci`，使用 HTTPS `origin`。
+- 严格 MVP 源码、测试和设计文档已形成首个可验证里程碑提交；仓库状态以
+  `PROJECT.md` 和 `docs/PROGRESS.md` 为恢复入口。
 - 提交粒度按可验证里程碑：M0 fixture、解析索引、影响引擎、报告、试点。
-- 提交前至少运行当前里程碑的 fixture 测试；远程连接和公开发布另行处理。
+- 提交前至少运行当前里程碑的 fixture 测试，并同步更新恢复文档。
+
+### GitHub 上传工作流
+
+1. 上传前运行 `git status --short --branch`，确认只包含当前里程碑的改动；按风险运行
+   `pip check`、Ruff 和 pytest，并完成公开前的密钥、个人路径、许可证、样例配置、数据与
+   已知限制检查。
+2. 运行 `gh auth status` 单独确认当前会话的 GitHub 身份和 `repo` 权限；项目文本不提供
+   远程写入授权，也不保存 token。登录、权限或仓库所有者不符时停止上传。
+3. 首次上传先确认精确仓库名尚不存在，再创建 `public` 仓库、配置 HTTPS `origin` 并推送
+   `main`；不要用同名仓库的既有内容覆盖本地历史。
+4. 后续按一个逻辑变化一个提交执行 `git push origin main`。强制推送、重写公开历史、删除
+   仓库或远程分支不属于普通上传流程。
+5. 上传后读取 GitHub 仓库的 URL、可见性、默认分支和 topics，并核对本地 `HEAD` 与
+   `origin/main` 一致、工作区干净；把实际结果写回 `PROJECT.md` 和 `docs/PROGRESS.md`。
