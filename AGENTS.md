@@ -58,8 +58,8 @@
 
 ## Git
 
-- 当前目录已初始化为本地 Git 仓库，分支为 `main`；目标公开仓库为
-  `https://github.com/CrAyoN-V587/procedure-ci`，使用 HTTPS `origin`。
+- 当前目录已初始化为 Git 仓库，分支为 `main`；公开仓库为
+  `https://github.com/CrAyoN-V587/procedure-ci`，使用 HTTPS `origin` 并跟踪 `origin/main`。
 - 严格 MVP 源码、测试和设计文档已形成首个可验证里程碑提交；仓库状态以
   `PROJECT.md` 和 `docs/PROGRESS.md` 为恢复入口。
 - 提交粒度按可验证里程碑：M0 fixture、解析索引、影响引擎、报告、试点。

@@ -1,7 +1,8 @@
 # Procedure CI 进度
 
 本文件是实现阶段的恢复入口；设计背景和证据见 `PROJECT.md`、`RESEARCH.md` 和
-`DESIGN.md`。所有结果均为本地离线验证；项目已初始化本地 Git `main` 分支，尚未接入远程仓库。
+`DESIGN.md`。核心分析结果均为本地离线验证；项目公开仓库为
+`https://github.com/CrAyoN-V587/procedure-ci`，本地 `main` 跟踪 `origin/main`。
 
 ## 当前状态（2026-08-30）
 
@@ -39,6 +40,9 @@ All checks passed!
 
 .venv\Scripts\python.exe -m pytest -q
 40 passed
+
+D:\python_3.12.7\python.exe -m build
+Successfully built procedure_ci-0.1.0.tar.gz and procedure_ci-0.1.0-py3-none-any.whl
 ```
 
 代表性 CLI：
@@ -54,6 +58,20 @@ All checks passed!
 基线输出为 `affectedSteps=0`、`errors=0`，且重复执行 JSON 字节一致。测试还验证了
 操作删除和无效字面量 payload 的退出码 `1`，缺失输入的退出码 `2`，外部引用和动态
 payload 的 `unknown` 语义。
+
+公开前检查覆盖当前候选文件和完整 Git 历史：凭据特征、本机绝对路径，以及误纳入的虚拟环境、
+缓存或构建产物匹配均为 0。MIT 许可证同时写入仓库和 Python 制品元数据。
+
+## GitHub 上传与恢复
+
+- 公开仓库：`https://github.com/CrAyoN-V587/procedure-ci`；可见性为 public，默认分支为 `main`；
+- HTTPS `origin`：`https://github.com/CrAyoN-V587/procedure-ci.git`；
+- 首次上传基线：`d4f925a`，当时本地 `HEAD` 与远程 `refs/heads/main` 完全一致；
+- 完整上传约束和首次/后续流程以项目 `AGENTS.md` 的“GitHub 上传工作流”为准；恢复后先运行
+  `git status --short --branch` 和 `gh auth status`，验证当前改动、跟踪关系与会话权限，再按逻辑
+  里程碑提交并执行 `git push origin main`；
+- 推送后必须重新读取仓库可见性和默认分支，并比较本地 `HEAD` 与远程 `main`，不能只凭
+  `git push` 的成功文案判断同步完成。
 
 ## 代码入口
 

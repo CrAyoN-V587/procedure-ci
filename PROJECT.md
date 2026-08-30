@@ -14,7 +14,8 @@
 
 下一步唯一动作：用至少 10 个真实或脱敏历史 API 变更回放，并访谈目标团队，判断是否继续产品化。
 
-最近验证：2026-08-30 完成严格 MVP 实现；`pip check`、Ruff、40 项 pytest 和代表性 CLI 已通过。调研证据快照仍为 2026-08-29。
+最近验证：2026-08-30 完成严格 MVP 实现和公开仓库上传；`pip check`、Ruff、40 项 pytest、
+代表性 CLI、Python 包构建及本地/远程 HEAD 同步均已验证。调研证据快照仍为 2026-08-29。
 
 ## 问题和价值
 
@@ -94,7 +95,8 @@
 - 创建独立项目目录和恢复文档。
 - 完成 M0 依赖 spike 和隔离 `.venv`；
 - 完成 loader、OpenAPI/Arazzo 索引、传递依赖图、差异分析、规则检查、JSON/Markdown 报告和三输入 CLI；
-- 完成 Webhook onboarding 夹具与 40 项正负向回归测试。
+- 完成 Webhook onboarding 夹具与 40 项正负向回归测试；
+- 完成 MIT 许可、公开前检查、GitHub 仓库配置和 `main` 首次推送。
 
 当前阻塞：
 
@@ -107,7 +109,8 @@
 
 仓库状态：
 
-- 已初始化本地 Git `main` 分支并提交严格 MVP；尚未配置远程仓库。
+- 公开仓库：`https://github.com/CrAyoN-V587/procedure-ci`；本地 `main` 通过 HTTPS `origin`
+  跟踪 `origin/main`。上传和验证工作流见 `AGENTS.md` 的“GitHub 上传工作流”。
 
 ## 关键决策
 
@@ -119,6 +122,7 @@
 | 不持久化 lockfile/digest | base/head 已提供比较边界，更新 digest 不能证明流程正确 | 2026-08-29 |
 | 确定错误才默认阻断 CI | “可能受影响”应进入人工审阅，不应伪装成确定失败 | 2026-08-29 |
 | 三输入：base/head OpenAPI + 当前 Arazzo | 工作流是当前审查对象，不把 workflow 版本变化混入 API diff | 2026-08-30 |
+| GitHub 仓库采用 public、main 和 HTTPS origin | 与同工作区公开开发者工具保持一致，便于审阅和作品集展示 | 2026-08-30 |
 
 ## 验证证据
 
@@ -131,11 +135,14 @@
 | 2026-08-30 | 初始文档落盘检查 | 枚举项目文件并验证相对链接、空文件、日期和 `.git` | 文档和目录结构完整；该检查发生在 Git 初始化前 |
 | 2026-08-30 | M0 依赖和实现验证 | `.venv\Scripts\python.exe -m pip check`、`.venv\Scripts\ruff.exe check src tests`、`.venv\Scripts\ruff.exe format --check src tests`、`.venv\Scripts\python.exe -m pytest -q`、代表性 CLI | 依赖无冲突；Ruff 检查和格式检查通过；40 项测试通过；CLI 生成稳定 JSON/Markdown，0/1/2 退出码路径已覆盖 |
 | 2026-08-30 | Git 里程碑 | 初始化 `main` 并提交 `242fbf6` | 严格 MVP 的源码、40 项测试、夹具和设计文档形成可追溯基线；远程仓库未配置 |
+| 2026-08-30 | 公开前检查和包构建 | 扫描当前候选文件与完整 Git 历史；`python -m build` | 凭据特征、本机绝对路径和不应公开的构建/缓存候选均为 0；sdist 和 wheel 构建成功且包含 MIT 许可证 |
+| 2026-08-30 | GitHub 首次上传 | 创建 `CrAyoN-V587/procedure-ci`、配置 topics 和 HTTPS `origin`，对比 `git rev-parse HEAD` 与 `git ls-remote origin refs/heads/main` | 仓库为 public、默认分支为 `main`；本地和远程均指向 `d4f925a`，首次上传完成 |
 
 ## 暂停检查点
 
-- 当前分支：`main`，本地工作区。
-- 最近功能里程碑：`242fbf6`（严格 MVP）；后续收尾提交只同步仓库状态文档。
+- 当前分支：`main`，跟踪 `origin/main`；远程为
+  `https://github.com/CrAyoN-V587/procedure-ci.git`。
+- 最近功能里程碑：`242fbf6`（严格 MVP）；公开仓库准备点为 `d4f925a`，后续收尾提交只同步仓库状态文档。
 - 不能丢失的本地数据：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md` 和决策记录。
 - 临时假设：目标用户愿意维护 Arazzo，并认为 step-level 影响报告比通用 OpenAPI diff 更有价值。
 - 恢复时第一步：阅读 `PROJECT.md` 和 `docs/PROGRESS.md`，只做历史回放或用户验证。
