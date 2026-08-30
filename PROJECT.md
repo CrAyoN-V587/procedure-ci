@@ -105,9 +105,9 @@
 
 - 只做历史回放和用户验证，不扩展到 Action、服务端或真实 API 执行。
 
-未提交修改：
+仓库状态：
 
-- 新项目目录尚未初始化 Git；当前代码和文档均为本地未提交修改。
+- 已初始化本地 Git `main` 分支并提交严格 MVP；尚未配置远程仓库。
 
 ## 关键决策
 
@@ -128,13 +128,14 @@
 | 2026-08-29 | Arazzo 标准定位 | 阅读 OAI Arazzo 1.1.0 官方规范与工具清单 | Arazzo 已覆盖流程表达、Agent 执行、生成、验证和运行；不得自造 IR 或重复相邻工具 |
 | 2026-08-29 | 真实重复表面 | 对照 World Monitor 的 OpenAPI 3.1.0 与 `check-country-risk` Skill | Skill 重复记录 operation、auth、parameter、response 和 error 信息，证明 API 与 Agent 流程存在漂移表面；未证明其采用 Arazzo |
 | 2026-08-29 | 相邻竞品 | 阅读 Runme、Doc Detective、Drift、oasdiff、arazzo-cli 等 | 未发现成熟工具直接输出 OpenAPI 变化到 Arazzo step 的传递影响；M0 已用夹具复核核心切口 |
-| 2026-08-30 | 文档落盘检查 | 枚举项目文件并验证相对链接、空文件、日期和 `.git` | 文档和目录结构完整；尚未初始化 Git |
+| 2026-08-30 | 初始文档落盘检查 | 枚举项目文件并验证相对链接、空文件、日期和 `.git` | 文档和目录结构完整；该检查发生在 Git 初始化前 |
 | 2026-08-30 | M0 依赖和实现验证 | `.venv\Scripts\python.exe -m pip check`、`.venv\Scripts\ruff.exe check src tests`、`.venv\Scripts\ruff.exe format --check src tests`、`.venv\Scripts\python.exe -m pytest -q`、代表性 CLI | 依赖无冲突；Ruff 检查和格式检查通过；40 项测试通过；CLI 生成稳定 JSON/Markdown，0/1/2 退出码路径已覆盖 |
+| 2026-08-30 | Git 里程碑 | 初始化 `main` 并提交 `242fbf6` | 严格 MVP 的源码、40 项测试、夹具和设计文档形成可追溯基线；远程仓库未配置 |
 
 ## 暂停检查点
 
-- 当前分支：无，尚未初始化 Git。
-- 最近稳定提交：无。
+- 当前分支：`main`，本地工作区。
+- 最近功能里程碑：`242fbf6`（严格 MVP）；后续收尾提交只同步仓库状态文档。
 - 不能丢失的本地数据：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md` 和决策记录。
 - 临时假设：目标用户愿意维护 Arazzo，并认为 step-level 影响报告比通用 OpenAPI diff 更有价值。
 - 恢复时第一步：阅读 `PROJECT.md` 和 `docs/PROGRESS.md`，只做历史回放或用户验证。

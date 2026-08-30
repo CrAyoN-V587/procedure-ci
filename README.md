@@ -24,7 +24,7 @@ base/head OpenAPI + current Arazzo
 - 输出：稳定 JSON/Markdown，退出码 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）；
 - 边界：离线、只读、内部 `$ref`、OpenAPI 3.1、Arazzo 1.1.x 的 operationId 同步子集；
   source description 必须唯一、类型为 `openapi`，且有合法名称和非空 URL；
-- 当前未初始化 Git 仓库，未实现 GitHub Action、API 服务或真实 API 执行。
+- 当前已初始化本地 Git 仓库；尚未配置远程仓库，也未实现 GitHub Action、API 服务或真实 API 执行。
 
 ## 本地运行
 
