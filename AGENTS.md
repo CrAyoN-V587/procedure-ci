@@ -6,7 +6,8 @@
 
 - 目标：把 OpenAPI 变更映射为受影响的 Arazzo workflow/step，并生成可审阅的 CI 报告。
 - 核心入口：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md`。
-- 当前阶段：严格 MVP 核心已实现，等待真实历史样本和用户试点；不自动扩展范围。
+- 当前阶段：严格 MVP 核心已实现；2026-08-31 重调研后冻结功能扩展，只做 M5 独立语料、
+  竞品对照和维护者验证，不自动把公开 corpus 的兼容缺口转为功能。
 
 ## 环境和命令
 
@@ -50,11 +51,16 @@
 
 ## 修改边界
 
-- 当前允许：完善设计、M0 依赖验证、fixture、最小 CLI 核心和必要的回归测试。
-- 当前不允许：FastAPI 服务、数据库、Dashboard、生产 API 执行、AsyncAPI、外部 `$ref`、多仓库、Skill 市场或同步层。
-- 不自造工作流 DSL；Arazzo 1.1 是流程源格式。
+- 当前允许：更新研究/设计、建立不含第三方原始数据的候选语料清单、人工 gold set、运行现有
+  validator/generator/oasdiff 基线，以及用现有 CLI 做只读回放。
+- 当前不允许：在 G1 前修改产品代码；尤其不增加 Arazzo 1.0、多 source、oasdiff adapter、
+  GitHub Action、FastAPI 服务、数据库、Dashboard、生产 API 执行、AsyncAPI、外部 `$ref`、
+  多仓库、Skill 市场或同步层。
+- 不自造工作流 DSL；当前实现的流程输入是 Arazzo 1.1.x 已验证子集。
 - 不重写通用 OpenAPI breaking-change 引擎；必要时与 `oasdiff` 输出集成。
 - 不实现完整 Arazzo validator、runner、编辑器或生成器。
+- 公开资产按 A（人工/混合维护）、B（结构化源生成）、C（自动重建）和 D（策展 corpus）分类；
+  只有至少一个 A 类真实样本能触发候选能力设计，C/D 类文件数量不能作为需求证据。
 
 ## Git
 

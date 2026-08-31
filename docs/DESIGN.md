@@ -1,28 +1,36 @@
 # Procedure CI 详细设计
 
-- 版本：0.1
-- 状态：严格 MVP 已实现；等待历史回放和用户试点
-- 调研基线：2026-08-29
-- 整理日期：2026-08-30
+- 版本：0.2（研究与验证设计；产品实现仍为 0.1.0）
+- 状态：严格 MVP 已实现；功能扩展冻结，等待 M5 独立语料与维护者门槛
+- 调研基线：2026-08-31
+- 整理日期：2026-08-31
 
 ## 1. 设计结论
 
 Procedure CI 的首个可验证形态不是通用“文档转 CI”，而是 **Arazzo Impact CI**：读取 Pull Request 前后的 OpenAPI 文档和 Arazzo 工作流，计算 API 实体变化会影响哪些工作流步骤，并生成可定位、可解释、可供 CI 判定的报告。
 
-首版坚持三条原则：
+已实现的 0.1 坚持三条原则：
 
-1. 使用 Arazzo 1.1.x，不定义自有 Procedure YAML 或中间规范。
+1. 只实现 Arazzo 1.1.x 的已验证子集，不定义自有 Procedure YAML 或中间规范。
 2. 静态分析优先；不发送真实请求，不执行任意代码，不让 LLM 决定 CI 成败。
 3. 无法确定时明确报告 `unknown`，不伪装成“未受影响”。
 
+2026-08-31 重调研后的设计修订：技术空白仍在，但公开资产主要由策展流程、结构化源或生成器
+产生，独立人工维护者证据不足。因此 0.2 不是功能路线图，而是继续投资的验证协议。Arazzo 1.0
+兼容、多 source、oasdiff adapter 和 GitHub Action 都保持候选状态，不因语料数量直接进入实现。
+
 ## 2. 目标用户与使用路径
 
-目标用户是同时维护以下资产的 API、DevEx 或 SDK 团队：
+目标用户进一步收窄为同时维护以下资产的 API、DevEx 或 SDK 团队：
 
 - OpenAPI 3.1 接口定义；
 - 2–3 条以上跨接口工作流；
 - 在 Pull Request 中审查接口变化；
 - 需要知道“哪些业务流程会被这次接口改动影响”。
+
+只有人工或混合维护的多步 Arazzo（A 类）可以作为首批用户证据。由同仓库结构化源生成的 Arazzo
+（B 类）只作为 generator QA 候选；带自动重建能力的 contract tests（C 类）和单一策展 corpus
+（D 类）只作为对照/压力语料，不能按文件数计算用户。
 
 预期命令（严格 MVP 的三个输入）：
 
@@ -34,9 +42,10 @@ procedure-ci check `
   --format markdown
 ```
 
-本地命令与 CI 使用同一分析核心。GitHub Action 只是后续薄封装，不在严格 MVP 内实现。
+本地命令与 CI 使用同一分析核心。GitHub Action 只有在 G1 通过且报告被真实用于 PR 决策后，
+才可能作为薄封装设计；当前不实现。
 
-## 3. 严格 MVP 边界
+## 3. 已实现的严格 MVP 边界
 
 | 维度 | MVP 支持 | 暂缓 |
 | --- | --- | --- |
@@ -48,6 +57,10 @@ procedure-ci check `
 | 输出 | 版本化 JSON、Markdown | Dashboard、数据库、PR 评论机器人 |
 | 执行 | 纯静态分析 | API 调用、Shell、模板、任意脚本 |
 | 智能能力 | 确定性规则 | LLM 裁决、自动修复 |
+
+该表描述现有 0.1.0，不代表下一版承诺。尤其是当前只接受 Arazzo 1.1.x 和恰一个 OpenAPI source；
+公开的 Pachca/Paygentic 资产使用 1.0.1，而 API Evangelist 的 split/move 事故涉及多 source。只有
+至少一个 A 类维护者需要这些能力，才为相应扩展单独设计和估时。
 
 ## 4. 系统边界与架构
 
@@ -99,6 +112,16 @@ tests/
 - `compare`：产生 base/head 的实体级变化；
 - `checks`：把变化传播到工作流步骤并生成诊断；
 - `report_*`：只负责稳定序列化和呈现，不重新判断结果。
+
+重调研后新增架构约束：
+
+- `compare.py` 保持严格 MVP 参考实现，不继续复制 oasdiff 的通用变化分类；
+- M5 先把 oasdiff v1.30 JSON 作为对照输入评估。只有它在真实样本中减少漏报或维护成本，且
+  step-impact 仍提供增量价值时，才设计 `ChangeEvent` adapter；没有第二个真实 provider 前不先建
+  抽象层；
+- sourceDescription link health 先由 Redocly/libopenapi/Jentic 等现有 resolver/validator 提供基线。
+  Procedure CI 不以“又一个 validator”为定位；只有 step 级解释超过基线时才考虑本地多源拓扑；
+- 生成器已拥有自动同步能力的 workflow 不要求进入 Procedure CI 主路径。
 
 ## 5. 核心数据模型
 
@@ -200,6 +223,17 @@ producer 输出边界：当前只解析 `$steps.<stepId>.outputs.<name>`（及�
 - 示例变化若破坏 Schema，升级为确定性错误；
 - 只详细报告被工作流依赖的实体及其传递依赖。
 
+现有比较器只承担严格 MVP 所需的确定性子集。oasdiff v1.30 已提供更广的 breaking/changelog
+分类、精确 source location、稳定 fingerprint 和机器输出 JSON Schema，因此后续不再用新增规则数量
+衡量本项目进展。M5 对每个历史样本同时记录：
+
+1. oasdiff/现有 validator 已发现的变化；
+2. Procedure CI 新增的 workflow/step/依赖路径；
+3. 两者重复、矛盾或遗漏的部分。
+
+只有对照结果证明“成熟 diff + step dependency join”优于现有内置 compare，才进入 adapter 设计；
+否则保持当前实现，不做框架化重构。
+
 ## 8. 诊断与严重级别
 
 | 代码 | 含义 | 默认级别 |
@@ -292,7 +326,11 @@ Markdown 报告按以下顺序呈现：结论、受影响工作流、每个步�
 - 快照测试：JSON 字段和 Markdown 排序稳定；
 - 性质测试候选：对象键顺序变化不改变结果；
 - 负向测试：坏 YAML、重复 `operationId`、外部引用、不支持表达式和超限输入；
-- 手工验证：在一个真实或脱敏样本上由维护者标注实际影响，再与工具结果对比。
+- M5 语料验证：先由维护者或研究者独立标注 gold set，再运行工具；不得依据工具输出反向构造标签；
+- 对照验证：同一样本运行现有 Arazzo validator/generator 和 oasdiff，只有新增 step-level 决策信息
+  才计为 Procedure CI 的贡献；
+- 分层报告：A 类人工/混合维护样本单独计算指标，B/C/D 类只报告覆盖率和失败原因，不能混合后
+  宣称需求成立。
 
 所有确定性错误代码至少有一个正例和一个不触发反例。
 
@@ -321,39 +359,58 @@ M0 已在 Python 3.12 隔离环境完成；依赖和开发命令以 `pyproject.t
 
 ## 14. 阶段与耗时
 
-| 阶段 | 交付物 | 估时 |
-| --- | --- | ---: |
-| M0：可行性验证 | 库评估、解析 spike、首个夹具；用户访谈转入 M5 | 3–5 天 |
-| M1：索引与依赖图 | OpenAPI/Arazzo 索引、内部 `$ref`、图查询 | 15–22 小时 |
-| M2：差异与诊断 | base/head 比较、诊断代码、退出码 | 18–26 小时 |
-| M3：CLI 与报告 | 稳定 JSON/Markdown、端到端夹具 | 12–18 小时 |
-| M4：试用修正 | 真实样本、误报分析、文档 | 15–24 小时 |
+0.1 严格 MVP（M0–M4）已经完成，历史估时不再作为继续投入依据。下一阶段单独设预算：
 
-严格 MVP 合计约 60–90 小时，即每周 15 小时约 4–6 周。若加入 GitHub Action、PR 定位、Skill 渲染和正式 pilot，约 90–135 小时，6–9 周。
+| 阶段 | 交付物 | 估时 | 是否写产品代码 |
+| --- | --- | ---: | --- |
+| R1：2026-08-31 研究刷新 | 标准、工具、公开 corpus 和竞争边界 | 已完成 | 否 |
+| M5a：语料筛选 | 12–20 个候选、A/B/C/D 分类、至少 10 个可还原 diff | 5–7 小时 | 否 |
+| M5b：gold set 与对照回放 | 人工标签、validator/generator/oasdiff 基线、指标 | 10–14 小时 | 否；只允许 corpus harness |
+| M5c：维护者验证 | 至少 3 次联系，争取 2 个独立 A 类样本 | 3–5 小时工作量，另计等待 | 否 |
+| G1：继续/停止评审 | 证据表、投资判断、下一能力的独立估时 | 2 小时 | 否 |
+
+M5 总工作量上限为 20–30 小时，不含外部等待。门槛通过前，不把 Arazzo 1.0、多 source、
+oasdiff adapter 或 GitHub Action 的开发时间计入计划。
 
 ## 15. 验证指标与停止条件
 
-M5 记录目标团队的工作流数量、当前审查方法与耗时，并衡量工具的 precision、recall、`unknown` 比例和是否改变审查决定。
+### 样本层
+
+- 至少 10 个可还原的 base/head OpenAPI 变化；
+- 来自至少 2 个互相独立的维护源；同一 API Evangelist corpus 只算一个来源；
+- 每个样本记录资产类型、Arazzo 版本、生成方式、source/step 数和人工 gold set；
+- 关键影响 recall ≥ 90%，关键误报率 ≤ 20%；`unknown` 必须按 A/B/C/D 分层报告。
+
+### 用户层
+
+- 至少 2 个独立维护者属于 A 类：人工或混合维护至少两步 workflow；
+- 至少 3 个样本中，Procedure CI 提供 validator/generator/oasdiff 没有的 step-level 决策信息；
+- 至少两次报告改变审阅决定或显著减少手工追踪时间。
+
+### 停止条件
 
 任一条件满足时停止产品化：
 
-- 5 支目标团队中少于 2 支维护可分析的工作流；
-- 真实样本的关键误报率持续高于 20%；
-- 第 3 周仍无法稳定处理内部引用和循环 Schema；
-- 上游成熟工具已提供等价的步骤级影响分析；
-- 用户只需要通用 OpenAPI breaking-change 检查，而不关心工作流步骤。
+- 找不到 2 个独立 A 类维护者；
+- 可观察的规模主要来自自动生成/自动重建资产；
+- validator + generator + oasdiff 已覆盖维护者需要的决策；
+- 支持真实样本前必须先实现完整 resolver、runner 或 condition evaluator；
+- 只能在同一策展 corpus 内证明效果；
+- 关键误报率高于 20% 或 recall 低于 90%。
 
-若技术成立但需求不足，将成果收缩为 `arazzo-impact-lab`：保留研究报告、夹具和可复用解析实验，控制总投入在 30–50 小时。
+门槛失败时保留当前 0.1.0 CLI、研究、夹具和测试，以 `arazzo-impact-lab`/作品集形态收尾。
 
-## 16. 后续而非 MVP
+## 16. 通过 G1 后才允许设计的候选
 
-- 复用 oasdiff 等成熟引擎提供更丰富的 API 变化分类；
-- 输出 GitHub Action 注释和 SARIF；
-- 从 Arazzo 生成 Agent Skill 的只读说明页；
-- 支持 OpenAPI 3.2、外部引用、AsyncAPI 和多文档工作流；
-- 与 Arazzo runner 的 dry-run/trace/replay 结果组合。
+- Arazzo 1.0.x 的共享同步 operationId 子集；仅当 A 类样本使用 1.0.x；
+- 多个本地 OpenAPI sourceDescriptions 和 operation relocation；仅当 step-impact 超出现有 resolver；
+- oasdiff JSON change provider；仅当对照证明可减少漏报或维护成本；
+- GitHub Action/SARIF；仅当现有 Markdown/JSON 确实被维护者用于 PR 决策；
+- OpenAPI 3.2、AsyncAPI、外部引用和多文档 workflow 继续排在更后。
+
+不再把 Skill renderer、Dashboard、服务端或真实 API 执行列为当前路线。
 
 ## 17. MVP 后的唯一入口
 
-先进行历史变更回放和目标用户访谈，记录误报、漏报和审阅时间；不因单个样本直接扩展到
-Action、服务端、真实 API 执行或完整 Arazzo validator。
+先完成 M5a：建立候选语料清单并按 A/B/C/D 分类，再选至少 10 个历史变化做人工标注。M5a 完成
+前不修改产品代码；不能为了让现有工具跑通 1.0.1 或多 source corpus 而先扩大支持范围。

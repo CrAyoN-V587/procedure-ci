@@ -4,7 +4,7 @@
 `DESIGN.md`。核心分析结果均为本地离线验证；项目公开仓库为
 `https://github.com/CrAyoN-V587/procedure-ci`，本地 `main` 跟踪 `origin/main`。
 
-## 当前状态（2026-08-30）
+## 当前状态（2026-08-31）
 
 严格 MVP 核心已经完成：
 
@@ -24,6 +24,23 @@
 - CLI 接受三个输入：`--base-openapi`、`--head-openapi`、`--arazzo`；
 - JSON/Markdown 报告排序稳定，退出码为 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）。
 
+功能代码仍为已验证的 0.1.0；2026-08-31 只更新研究、设计和投资门槛，没有扩大运行时能力。
+
+## 2026-08-31 调研与设计刷新
+
+- 核对 Arazzo 1.0.1/1.1.0、官方 tooling 和仍开放的 runtime expression/condition 语义问题；
+- 对照 Redocly、libopenapi、Jentic/Arazzo Toolkit、Speakeasy、oasdiff 和 PactFlow Drift，确认验证、
+  执行、生成、自动同步和通用 diff 已有强相邻能力；
+- GitHub code search 显示 Arazzo 公开文件很多，但数量高度受命名和单一策展 corpus 影响，不能当作
+  独立用户数量；
+- API Evangelist #205 提供真实大规模漂移证据：4,956 个 workflow corpus 中曾有 5,153 个本地
+  sourceDescriptions（92%）在 OpenAPI refine/split 后悬空，影响 545 个 provider；该问题也说明
+  transform 后缺少重新验证，而不是市场缺少 validator；
+- Pachca 的 10 次 Arazzo 文件提交来自结构化 workflow 源的多表面生成；Paygentic 的 29 次提交
+  属于 Speakeasy 自动同步 contract tests；Bank API 是 1.1 多步样本，但只有一个历史提交；
+- 决策 0003 已冻结功能扩展：只有至少 2 个独立 A 类维护者和与现有工具对照后的增量 step-impact
+  证据，才能触发 Arazzo 1.0、多 source、oasdiff adapter 或 GitHub Action 设计。
+
 ## 实际验证
 
 执行目录：项目根目录。
@@ -41,7 +58,7 @@ All checks passed!
 .venv\Scripts\python.exe -m pytest -q
 40 passed
 
-D:\python_3.12.7\python.exe -m build
+python -m build  # 使用已验证的 Python 3.12.7 解释器
 Successfully built procedure_ci-0.1.0.tar.gz and procedure_ci-0.1.0-py3-none-any.whl
 ```
 
@@ -108,6 +125,7 @@ src/procedure_ci/
 
 ## 下一步
 
-只做 M5 验证：收集至少 10 个真实或脱敏历史 API 变更，记录人工标注的受影响 step，
-计算 precision/recall/unknown 比例和审阅耗时，并访谈目标团队。满足停止条件时降级为
-`arazzo-impact-lab`；没有试点证据前不增加 GitHub Action、服务端、数据库或网络访问。
+只做 M5a：建立 12–20 个候选历史变化清单，按 A（人工/混合维护）、B（结构化源生成）、
+C（自动重建）和 D（策展 corpus）分类，记录版本、生成方式、source/step 数和可还原性，筛出
+至少 10 个 base/head 对。M5a 完成前不修改产品代码；后续必须先做人工 gold set 和
+validator/generator/oasdiff 对照，满足停止条件时降级为 `arazzo-impact-lab`。

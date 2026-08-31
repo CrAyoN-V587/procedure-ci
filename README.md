@@ -19,7 +19,8 @@ base/head OpenAPI + current Arazzo
 
 ## 当前状态
 
-- 状态：严格 MVP 核心已实现，等待真实样本和用户试点；
+- 状态：严格 MVP 核心已实现；2026-08-31 重调研后冻结功能扩展，先验证独立维护者和相对
+  validator/generator/oasdiff 的增量价值；
 - 入口：三输入 `base OpenAPI + head OpenAPI + 当前 Arazzo`；
 - 输出：稳定 JSON/Markdown，退出码 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）；
 - 边界：离线、只读、内部 `$ref`、OpenAPI 3.1、Arazzo 1.1.x 的 operationId 同步子集；
@@ -65,6 +66,7 @@ Webhook onboarding 夹具覆盖无关变化、嵌套引用、必填字段、认�
 - [docs/PROGRESS.md](docs/PROGRESS.md)：可恢复的实现进度和实际验证记录；
 - [docs/decisions/0001-use-arazzo.md](docs/decisions/0001-use-arazzo.md)：采用 Arazzo、放弃自定义 IR 的决策。
 - [docs/decisions/0002-three-input-current-arazzo.md](docs/decisions/0002-three-input-current-arazzo.md)：固定三输入和当前 Arazzo 语义的决策。
+- [docs/decisions/0003-gate-expansion-on-independent-pilots.md](docs/decisions/0003-gate-expansion-on-independent-pilots.md)：用独立维护者和对照回放约束功能扩展。
 
 ## License
 
