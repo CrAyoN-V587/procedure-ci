@@ -1,6 +1,6 @@
 # Procedure CI
 
-状态：严格 MVP 已实现；功能扩展冻结，等待 M5 证据门槛
+状态：严格 MVP 已实现；M5a 语料筛选已完成，功能扩展仍冻结
 类型：P2 开发者工具 / Agent 工程
 开始日期：2026-08-29
 最近更新：2026-08-31
@@ -10,15 +10,15 @@
 
 一句话目标：把 OpenAPI 变更映射到受影响的 Arazzo workflow/step，输出确定性、可定位、可供 PR 审阅的影响报告。
 
-当前阶段：严格 MVP 核心已实现；第三次调研确认存在公开漂移语料，但独立人工维护者和相对现有
-validator/generator/oasdiff 的增量价值尚未验证。
+当前阶段：M5a 已从 15 个候选中保留 12 个可还原历史变化，覆盖 2 个独立维护源。
+保留样本全部属于 B/C 类 Arazzo 1.0.1 生成资产；独立 A 类维护者和相对现有
+validator/generator/oasdiff 的增量价值仍未验证。
 
-下一步唯一动作：完成 M5a 语料筛选，把 12–20 个候选按 A（人工/混合维护）、B（结构化源生成）、
-C（自动重建）和 D（策展 corpus）分类，保留至少 10 个可还原历史变化；不修改产品代码。
+下一步唯一动作：开始 M5b，先对 [M5a 保留的 12 个样本](docs/M5-CORPUS.md) 独立建立
+gold set，然后运行生成器/Arazzo validator/oasdiff 基线。不为跑通 1.0.1 样本修改产品代码。
 
-最近验证：2026-08-31 刷新 Arazzo 标准、工具生态、公开代码搜索和三类真实仓库历史；确认
-API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和 Speakeasy 自动同步边界。
-代码最近一次验证仍为 2026-08-30 的 `pip check`、Ruff、40 项 pytest、CLI 和 Python 包构建。
+最近验证：2026-08-31 通过 GitHub API 核对 12 个保留样本的完整 parent/head SHA、
+OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结果见“验证证据”。
 
 ## 问题和价值
 
@@ -67,7 +67,8 @@ API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和
 - [x] 无关 operation 变化不误报；二级 `$ref` schema 和 security 变化能传递到正确 step。
 - [x] 悬空 operation、无效 example、无法解析的 runtime output 分别产生稳定诊断和源码位置。
 - [x] JSON 输出具有版本化 schema；Markdown 报告能从变化定位到 workflow、step、依赖路径和建议动作。
-- [ ] 从至少 2 个独立维护源筛出 10 个可还原历史变化，并在运行工具前完成 gold set。
+- [x] 从 2 个独立维护源筛出 12 个可还原历史变化。
+- [ ] 在运行工具前为保留样本完成独立 gold set。
 - [ ] 至少找到 2 个 A 类维护者，且在 3 个样本中证明相对 validator/generator/oasdiff 的增量
   step-level 决策价值；否则只按学习项目收尾。
 
@@ -78,7 +79,7 @@ API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和
 - [x] M2（1–2 周）：完成直接/传递依赖图、base/head entity compare 和 step impact。
 - [x] M3（1–2 周）：完成 example、security、step output/runtime expression 的确定性检查。
 - [x] M4（1 周）：稳定 JSON/Markdown 报告和退出码；Action 示例延期。
-- [ ] M5a（5–7 小时）：候选语料 A/B/C/D 分类，保留至少 10 个可还原 diff；不修改产品代码。
+- [x] M5a（5–7 小时上限）：15 个候选按 A/B/C/D 分类，保留 12 个可还原 diff；未修改产品代码。
 - [ ] M5b（10–14 小时）：人工 gold set、现有工具基线和 Procedure CI 对照回放。
 - [ ] M5c（3–5 小时）：联系至少 3 个维护者，争取 2 个独立 A 类样本；通过 G1 后才设计下一功能。
 
@@ -108,6 +109,8 @@ API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和
 - 完成 Webhook onboarding 夹具与 40 项正负向回归测试；
 - 完成 MIT 许可、公开前检查、GitHub 仓库配置和 `main` 首次推送；
 - 完成 2026-08-31 第三次专项调研，增加公开 corpus 分层、竞品对照和继续投资门槛。
+- 完成 M5a：15 个候选、12 个可还原 parent/head 对、2 个独立维护源，并单独记录
+  当前 MVP 可直接回放数为 0。
 
 当前阻塞：
 
@@ -115,10 +118,13 @@ API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和
 - 尚未证明 step-impact 相对现有 validator、generator 自动同步和 oasdiff 的增量审阅价值；
 - 当前实现只接受 Arazzo 1.1.x、单 OpenAPI source 和同步 operationId 子集；公开语料大量使用
   1.0.1、多 source 或非标准表达式，但这些缺口不能在需求门槛前自动转为功能任务。
+- M5a 保留的 12 个样本全部为 Arazzo 1.0.1 的 B/C 类资产，未提供当前 1.1.x MVP 的
+  直接回放样本。
 
 下一步：
 
-- 先做 M5a 语料筛选，不修改产品代码；随后才决定是否进入人工标注、回放和维护者联系。
+- 先做 M5b 人工 gold set，冻结标签后再运行基线；不修改产品代码。M5c 的维护者
+  联系属于外部消息，本轮未执行。
 
 仓库状态：
 
@@ -154,16 +160,19 @@ API Evangelist 的大规模 sourceDescription 漂移、Pachca 的生成出口和
 | 2026-08-30 | GitHub 首次上传 | 创建 `CrAyoN-V587/procedure-ci`、配置 topics 和 HTTPS `origin`，对比 `git rev-parse HEAD` 与 `git ls-remote origin refs/heads/main` | 仓库为 public、默认分支为 `main`；本地和远程均指向 `d4f925a`，首次上传完成 |
 | 2026-08-31 | 标准和竞品刷新 | Arazzo 1.0.1/1.1.0、OAI tooling、Redocly、libopenapi、Jentic、Speakeasy、oasdiff、PactFlow | 1.1 已发布但仍有语法歧义 Issue；验证/执行/生成/自动同步/diff 均有成熟相邻能力，step-impact 仍未发现直接等价物 |
 | 2026-08-31 | 公开语料与历史 | GitHub code search、API Evangelist #205、Pachca/Paygentic/Bank API 文件和提交历史 | 找到真实漂移与大量语料；但语料高度集中于策展或生成流程，不能证明独立用户规模 |
+| 2026-08-31 | M5a 语料筛选 | 核对 15 个候选的 commit、路径、Arazzo 版本和资产规模 | 保留 12 个可还原历史对，来自 2 个独立源；均为 B/C 类 1.0.1 资产，当前 MVP 可直接回放数为 0 |
+| 2026-08-31 | M5a 文档与回归 | GitHub API 核对、本地 Markdown 链接检查、公开文本扫描、`git diff --check`、`pip check`、Ruff、pytest | 12/12 样本的 parent 和变更路径匹配；12 个 Markdown 本地链接缺失 0；凭据/个人绝对路径匹配 0；依赖、Ruff 和格式检查通过；40 项 pytest 通过 |
 
 ## 暂停检查点
 
 - 当前分支：`main`，跟踪 `origin/main`；远程为
   `https://github.com/CrAyoN-V587/procedure-ci.git`。
 - 最近功能里程碑：`242fbf6`（严格 MVP）；当前恢复入口以已推送的 `origin/main` 和本文档为准。
-- 不能丢失的本地数据：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md` 和决策记录。
+- 不能丢失的本地数据：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md`、
+  `docs/M5-CORPUS.md` 和决策记录。
 - 临时假设：目标用户愿意维护 Arazzo，并认为 step-level 影响报告比通用 OpenAPI diff 更有价值。
-- 恢复时第一步：阅读 `PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md` 和决策 0003；只做
-  M5a 语料分类，不修改产品代码。
+- 恢复时第一步：阅读 `PROJECT.md`、`docs/M5-CORPUS.md`、`docs/DESIGN.md` 和决策 0003；
+  对 12 个保留样本先做独立 gold set，不修改产品代码。
 
 ## 已知限制和后续
 

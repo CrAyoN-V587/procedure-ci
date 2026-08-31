@@ -24,7 +24,8 @@
 - CLI 接受三个输入：`--base-openapi`、`--head-openapi`、`--arazzo`；
 - JSON/Markdown 报告排序稳定，退出码为 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）。
 
-功能代码仍为已验证的 0.1.0；2026-08-31 只更新研究、设计和投资门槛，没有扩大运行时能力。
+功能代码仍为已验证的 0.1.0；2026-08-31 只更新研究、设计、M5a 语料清单和投资门槛，
+没有扩大运行时能力。
 
 ## 2026-08-31 调研与设计刷新
 
@@ -40,6 +41,17 @@
   属于 Speakeasy 自动同步 contract tests；Bank API 是 1.1 多步样本，但只有一个历史提交；
 - 决策 0003 已冻结功能扩展：只有至少 2 个独立 A 类维护者和与现有工具对照后的增量 step-impact
   证据，才能触发 Arazzo 1.0、多 source、oasdiff adapter 或 GitHub Action 设计。
+
+## 2026-08-31 M5a 语料筛选
+
+- [M5a 语料清单](M5-CORPUS.md) 共 15 个候选：A 1（弱证据）、B 6、C 6、D 2；
+- 保留 12 个精确 parent/head OpenAPI + head Arazzo 边界，来自 `pachca/openapi` 和
+  `paygentic` 两个独立维护源；
+- 逐个核对完整 SHA、共同变更的 OpenAPI/Arazzo 路径、Arazzo 版本以及
+  source/workflow/step 数；仓库内未复制第三方原始文件；
+- 12 个样本均为 Arazzo 1.0.1 的 B/C 类生成资产，当前 1.1.x 严格 MVP 可直接回放数为 0；
+- M5a 只登记生成器、Arazzo validator 和 oasdiff 基线，未运行它们；未写入受影响
+  step 或工具输出，避免污染 M5b gold set。
 
 ## 实际验证
 
@@ -75,6 +87,31 @@ Successfully built procedure_ci-0.1.0.tar.gz and procedure_ci-0.1.0-py3-none-any
 基线输出为 `affectedSteps=0`、`errors=0`，且重复执行 JSON 字节一致。测试还验证了
 操作删除和无效字面量 payload 的退出码 `1`，缺失输入的退出码 `2`，外部引用和动态
 payload 的 `unknown` 语义。
+
+M5a 本轮验证：
+
+```text
+GitHub API sample boundary check
+12/12 parent SHA and OpenAPI/Arazzo changed paths matched
+
+Markdown local-link check
+12 Markdown files; 0 missing local links
+
+public text scan
+0 credential patterns; 0 personal absolute paths
+
+.venv\Scripts\python.exe -m pip check
+No broken requirements found.
+
+.venv\Scripts\ruff.exe check src tests
+All checks passed!
+
+.venv\Scripts\ruff.exe format --check src tests
+16 files already formatted
+
+.venv\Scripts\python.exe -m pytest -q
+40 passed in 3.64s
+```
 
 公开前检查覆盖当前候选文件和完整 Git 历史：凭据特征、本机绝对路径，以及误纳入的虚拟环境、
 缓存或构建产物匹配均为 0。MIT 许可证同时写入仓库和 Python 制品元数据。
@@ -125,7 +162,6 @@ src/procedure_ci/
 
 ## 下一步
 
-只做 M5a：建立 12–20 个候选历史变化清单，按 A（人工/混合维护）、B（结构化源生成）、
-C（自动重建）和 D（策展 corpus）分类，记录版本、生成方式、source/step 数和可还原性，筛出
-至少 10 个 base/head 对。M5a 完成前不修改产品代码；后续必须先做人工 gold set 和
-validator/generator/oasdiff 对照，满足停止条件时降级为 `arazzo-impact-lab`。
+只做 M5b：对 PCH-01–06 和 PAY-01–06 先独立建立 gold set，冻结标签后再执行生成器、
+Arazzo validator 和 oasdiff 基线。如果需要先扩展 Arazzo 1.0.1 才能运行 Procedure CI，记录
+当前 MVP 的覆盖失败，不在 M5b 修改产品代码。M5c 外部维护者联系和 G1 决策均尚未完成。

@@ -125,14 +125,15 @@ API audit 提交同时修改 OpenAPI、workflows、CLI、SDK、Agent Skills 和�
 
 | 群体 | 资产来源 | Procedure CI 可能价值 | 本轮判断 |
 | --- | --- | --- | --- |
-| A：人工或混合维护的多步 workflow | 人负责依赖、参数和跨步骤数据流 | 变化定位到 step，减少人工追踪 | 唯一候选首批用户；必须找到至少 2 个独立维护者 |
+| A：人工或混合维护的多步 workflow | 人负责依赖、参数和跨步骤数据流 | 变化定位到 step，减少人工追踪 | 唯一候选首批用户；每个独立源至少有 1 条非完全自动重建、≥2 step 且跨 ≥2 operation 的 workflow；G1 必须找到至少 2 个独立维护者 |
 | B：由同仓库结构化源生成的 Arazzo | TypeScript/数据库/模板生成多个出口 | 作为 generator QA，发现传播遗漏 | 次要用户；先与生成器自带校验对照 |
 | C：随 OpenAPI 自动重建的 contract tests | Speakeasy 等生成器 | 生成器已拥有同步上下文 | 不作为产品需求证据，只做负向对照 |
 | D：策展/研究 corpus | 批量生成或修复公开 API workflow | 压力测试和规则发现 | 只作为语料，不按文件数计算用户 |
 
 首批目标从“任何维护 Arazzo 的团队”收紧为：
 
-- 至少两条跨 operation 的 workflow；
+- 至少一条包含 2 个以上 step、且跨越 2 个以上 operation 的 workflow；拥有
+  2–3 条 workflow 只作为更强的用户信号，不是 A 类硬门槛；
 - Arazzo 不是每次都由同一生成器完全重建；
 - OpenAPI 与 workflow 在 PR 中共同演进；
 - 团队当前需要人工判断 schema/auth/response 变化是否影响具体步骤。
@@ -172,7 +173,8 @@ API audit 提交同时修改 OpenAPI、workflows、CLI、SDK、Agent Skills 和�
 1. 从 API Evangelist、Pachca、Paygentic 和其他独立仓库列出 12–20 个候选历史变更；
 2. 标记资产属于 A/B/C/D 哪一类，并记录 Arazzo 版本、source 数、step 数、生成/维护方式；
 3. 只保留至少 10 个可还原的 base/head OpenAPI 对；
-4. 先用现有 validator/generator/oasdiff 建立基线，不把它们能完整回答的问题算作本项目价值。
+4. 为每个候选登记可用的 validator/generator/oasdiff 基线；M5a 不执行基线，
+   实际对照留到完成独立 gold set 之后的 M5b。
 
 ### M5b：人工标注与回放（10–14 小时）
 

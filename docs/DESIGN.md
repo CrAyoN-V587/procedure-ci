@@ -24,13 +24,14 @@ Procedure CI 的首个可验证形态不是通用“文档转 CI”，而是 **A
 目标用户进一步收窄为同时维护以下资产的 API、DevEx 或 SDK 团队：
 
 - OpenAPI 3.1 接口定义；
-- 2–3 条以上跨接口工作流；
+- 至少 1 条包含 2 个以上 step、且跨越 2 个以上 operation 的工作流；
 - 在 Pull Request 中审查接口变化；
 - 需要知道“哪些业务流程会被这次接口改动影响”。
 
 只有人工或混合维护的多步 Arazzo（A 类）可以作为首批用户证据。由同仓库结构化源生成的 Arazzo
 （B 类）只作为 generator QA 候选；带自动重建能力的 contract tests（C 类）和单一策展 corpus
 （D 类）只作为对照/压力语料，不能按文件数计算用户。
+拥有 2–3 条 workflow 是更强的用户信号，不是 A 类入选的硬门槛。
 
 预期命令（严格 MVP 的三个输入）：
 
@@ -88,11 +89,13 @@ src/procedure_ci/
   cli.py
   loader.py
   models.py
+  errors.py
   oas_index.py
   arazzo_index.py
   graph.py
   compare.py
   checks.py
+  engine.py
   report_json.py
   report_markdown.py
 tests/
@@ -412,5 +415,7 @@ oasdiff adapter 或 GitHub Action 的开发时间计入计划。
 
 ## 17. MVP 后的唯一入口
 
-先完成 M5a：建立候选语料清单并按 A/B/C/D 分类，再选至少 10 个历史变化做人工标注。M5a 完成
-前不修改产品代码；不能为了让现有工具跑通 1.0.1 或多 source corpus 而先扩大支持范围。
+M5a 已在 [M5 语料清单](M5-CORPUS.md) 中筛选 15 个候选并保留 12 个可还原历史对。
+下一入口是 M5b：先对保留样本做人工标注，再执行 validator/generator/oasdiff 对照。
+这些样本全部使用 Arazzo 1.0.1，当前 MVP 可直接回放数为 0；不能为了跑通语料而在
+M5b 前扩大产品支持范围。
