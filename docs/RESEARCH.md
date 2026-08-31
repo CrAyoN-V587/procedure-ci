@@ -24,8 +24,20 @@ Arazzo `workflowId + stepId + dependency path`。但这还不足以支持继续�
 3. 已发现真实的大规模 sourceDescription 漂移事故，但现有 validator 重新运行即可发现，说明该
    事故首先是流水线编排问题，不自动证明需要一个新的分析器。
 
-当前项目最合理的定位是 **Arazzo step-impact research tool / portfolio project**。是否升级为产品，
-只由独立维护者的历史变更回放和对照实验决定。
+当前项目的最终定位是 **Arazzo step-impact research tool / portfolio project**。M5b 已确认技术
+缝隙存在，但当前 CLI 原始样本覆盖 0/12、complete gold 0、A 类维护者 0；项目停止产品化。
+
+## M5b 结果补充
+
+[M5b 对照](M5-BASELINES.md) 在 gold 独立提交后验证：oasdiff 能发现 PAY-05 的 operation
+删除；Redocly 默认 lint 认为 head Arazzo 结构有效；带 Speakeasy 自动重建标记的历史 head
+Arazzo 仍保留 stale `getFeePrice` step。本轮 Registry run 因外部认证未执行，因此只证明
+“API diff 信号没有自动连接到 workflow step”是真问题，不证明实际重建行为或 Procedure CI
+是值得扩展的产品方案。
+
+当前 0.1.0 对 12 个 B/C 类 Arazzo 1.0.1 样本均在输入阶段退出 2，无法计算 precision、
+recall 或审阅增量。为了开始验证而先实现 Arazzo 1.0、OpenAPI 3.0 与输入兼容，会倒置本调研
+设定的 G1。决策 0004 因此停止后续功能投资；只有主动出现的合格 A 类样本才可重开评审。
 
 ## 2026-08-31 相比前次调研的新信息
 
@@ -211,8 +223,9 @@ API audit 提交同时修改 OpenAPI、workflows、CLI、SDK、Agent Skills 和�
 - 为支持真实样本必须先实现完整 resolver/runner/condition evaluator；
 - 只能在同一策展 corpus 内证明效果。
 
-下一阶段最大投入上限为 20–30 小时研究与回放，不含新功能开发。门槛失败时保留现有 CLI，项目以
-`arazzo-impact-lab`/作品集形态收尾；门槛通过后再单独估算 1.0 兼容、多源或 oasdiff adapter。
+M5b 已 fast-fail，原 20–30 小时上限不再继续消耗。现有 CLI 以 Procedure CI 0.1.0
+研究/作品集形态收尾；不估算 1.0 兼容、多源或 oasdiff adapter。M5c 外部联系没有执行，
+也不在停止后为凑门槛发送消息。
 
 ## 主要来源
 

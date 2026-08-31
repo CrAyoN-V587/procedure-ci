@@ -1,12 +1,12 @@
 # Procedure CI 进度
 
-本文件是实现阶段的恢复入口；设计背景和证据见 `PROJECT.md`、`RESEARCH.md` 和
+本文件是实现与维护阶段的恢复入口；设计背景和证据见 `PROJECT.md`、`RESEARCH.md` 和
 `DESIGN.md`。核心分析结果均为本地离线验证；项目公开仓库为
 `https://github.com/CrAyoN-V587/procedure-ci`，本地 `main` 跟踪 `origin/main`。
 
 ## 当前状态（2026-08-31）
 
-严格 MVP 核心已经完成：
+严格 MVP 核心与 M5b fast-fail 已完成；项目已停止产品化并进入维护状态：
 
 - `ruamel.yaml` + `jsonschema` 依赖 spike 已完成，写入 `pyproject.toml`；项目要求 Python 3.12+，
   当前只在 Python 3.12.7 验证；
@@ -24,8 +24,8 @@
 - CLI 接受三个输入：`--base-openapi`、`--head-openapi`、`--arazzo`；
 - JSON/Markdown 报告排序稳定，退出码为 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）。
 
-功能代码仍为已验证的 0.1.0；2026-08-31 只更新研究、设计、M5a 语料清单和投资门槛，
-没有扩大运行时能力。
+功能代码仍为已验证的 0.1.0；2026-08-31 的 M5a/M5b 只更新研究、语料、gold、基线与
+停止决策，没有扩大运行时能力。
 
 ## 2026-08-31 调研与设计刷新
 
@@ -52,6 +52,23 @@
 - 12 个样本均为 Arazzo 1.0.1 的 B/C 类生成资产，当前 1.1.x 严格 MVP 可直接回放数为 0；
 - M5a 只登记生成器、Arazzo validator 和 oasdiff 基线，未运行它们；未写入受影响
   step 或工具输出，避免污染 M5b gold set。
+
+## 2026-08-31 M5b fast-fail
+
+- 先以 `e535370` 独立提交 [代表性 gold](M5-GOLD.md)，再运行任何基线；PCH-01 因
+  冻结前误看 Arazzo diff 标为 `unresolvable`，PAY-05 只保留 5 个 direct-operation
+  `partial` 标签；
+- 12 个原始样本可运行覆盖 0/12，complete gold 0，A 类维护者 0；precision/recall 不可计算；
+- oasdiff 1.30.0 对 PCH-01 报告 17 条 breaking 信号，对 PAY-05 报告删除 path 与两个
+  request enum 收窄，但不提供 workflow/step 映射；
+- Redocly 2.49.0 默认 lint 认为两份 head Arazzo 结构有效；PCH-01 随后触发 Windows
+  Node/libuv assertion，不能记为 clean pass；
+- Pachca 的 Arazzo 生成出口重建后内容一致，但完整上游门槛在 Next.js symlink 上因 Windows
+  `EPERM` 失败；Paygentic registry 生成需要外部认证，记录为 `blocked_external_auth`；
+- 带自动重建标记的 PAY-05 历史 head Arazzo 仍引用 head OpenAPI 已删除的 `getFeePrice`，
+  证明层间缝隙真实；本轮 Registry run 未执行，当前 Procedure CI 也未在原始样本上完成分析，
+  故增量价值为 0 条已证明；
+- 决策 0004 已停止产品化；详细命令、输出边界和角色场景见 [M5b 对照](M5-BASELINES.md)。
 
 ## 实际验证
 
@@ -113,6 +130,26 @@ All checks passed!
 40 passed in 3.64s
 ```
 
+M5b 代表性对照：
+
+```text
+gold freeze commit
+e535370
+
+Redocly CLI 2.49.0
+PAY-05: structurally valid, exit 0
+PCH-01: structurally valid output, then Node/libuv assertion
+
+oasdiff 1.30.0
+PCH-01: 17 breaking signals (14 error, 3 warning)
+PAY-05: 3 breaking errors, including removed API path
+
+Procedure CI 0.1.0
+PCH-01 original/version probe: exit 2 on OpenAPI 3.0.0
+PAY-05 original: exit 2 on Arazzo 1.0.1
+PAY-05 version probe: exit 2 on sourceDescriptions constraint
+```
+
 公开前检查覆盖当前候选文件和完整 Git 历史：凭据特征、本机绝对路径，以及误纳入的虚拟环境、
 缓存或构建产物匹配均为 0。MIT 许可证同时写入仓库和 Python 制品元数据。
 
@@ -121,6 +158,8 @@ All checks passed!
 - 公开仓库：`https://github.com/CrAyoN-V587/procedure-ci`；可见性为 public，默认分支为 `main`；
 - HTTPS `origin`：`https://github.com/CrAyoN-V587/procedure-ci.git`；
 - 首次上传基线：`d4f925a`，当时本地 `HEAD` 与远程 `refs/heads/main` 完全一致；
+- 2026-08-31 的 M5b gold、对照基线与停止决策已按普通提交推送到 `main`；推送后核对
+  仓库仍为 public、默认分支仍为 `main`，本地 `HEAD` 与远程 `main` 一致；
 - 完整上传约束和首次/后续流程以项目 `AGENTS.md` 的“GitHub 上传工作流”为准；恢复后先运行
   `git status --short --branch` 和 `gh auth status`，验证当前改动、跟踪关系与会话权限，再按逻辑
   里程碑提交并执行 `git push origin main`；
@@ -162,6 +201,6 @@ src/procedure_ci/
 
 ## 下一步
 
-只做 M5b：对 PCH-01–06 和 PAY-01–06 先独立建立 gold set，冻结标签后再执行生成器、
-Arazzo validator 和 oasdiff 基线。如果需要先扩展 Arazzo 1.0.1 才能运行 Procedure CI，记录
-当前 MVP 的覆盖失败，不在 M5b 修改产品代码。M5c 外部维护者联系和 G1 决策均尚未完成。
+没有计划内产品开发。只修复 0.1.0 已有边界内的确定性 bug；新的 A 类、OpenAPI 3.1 +
+Arazzo 1.1.x 样本必须先按 M5 冻结协议只读回放，再单独决定是否重开 G1。M5c 外部联系
+未执行，也不在停止后为凑门槛发送消息。

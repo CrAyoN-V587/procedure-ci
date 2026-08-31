@@ -97,16 +97,14 @@ A 类的最低资格统一为：一个独立维护源至少有一条人工或混
 | AE-01 | D / `api-evangelist` | [roadmap #205](https://github.com/api-evangelist/roadmap/issues/205)；4,956 个 workflow 的策展 corpus | Issue 记录 refine/split 后的大规模 source relocation，但不是单一仓库的精确 OpenAPI parent/head + head Arazzo 样本 | 否 / 否 | 保留为需求和压力证据；不按 545 个 provider 计独立用户，不进入 M5b 样本数 |
 | AE-02 | D / `api-evangelist` | [`stripe-attach-payment-method-workflow.yml`](https://github.com/api-evangelist/stripe/blob/454b2faee2179f27ba341c65eecddaf48d4e84de/arazzo/stripe-attach-payment-method-workflow.yml)；1.0.1，3 source，1 workflow/3 steps | [`324cd181849f74bbeb71a184318364ee3363cbdf`](https://github.com/api-evangelist/stripe/commit/324cd181849f74bbeb71a184318364ee3363cbdf) → [`454b2faee2179f27ba341c65eecddaf48d4e84de`](https://github.com/api-evangelist/stripe/commit/454b2faee2179f27ba341c65eecddaf48d4e84de)；该提交是 Arazzo source repoint，没有 OpenAPI 变更 | 否 / 否 | 保留为 workflow-only 修复边界；当前三输入设计不评估 base/head Arazzo diff |
 
-## M5b 恢复入口
+## M5b 结果入口
 
-M5b 可以开始，但不等于已通过 G1。执行顺序是：
+M5b 已按“先冻结、后基线”的顺序完成 fast-fail。代表性 gold、PCH-01 污染披露和资格矩阵见
+[M5b Gold Set](M5-GOLD.md)；generator、validator、oasdiff、Procedure CI 对照和停止评审见
+[M5b 对照基线](M5-BASELINES.md)。
 
-1. 只对 PCH-01–06 和 PAY-01–06 建立独立 gold set，先记录真实受影响的 workflow/step、
-   依赖路径和是否需要修改 Arazzo；
-2. 标注人在未看 Procedure CI 输出时冻结 gold set；
-3. 再运行结构化源/生成器、Arazzo validator 和 oasdiff 基线；
-4. 如果仍需先修改产品代码才能运行 Procedure CI，记录覆盖失败，不在 M5b 内偷渡功能；
-5. 只在存在两个经确认的独立 A 类维护者、对照指标和真实审阅收益后进入 G1。
+12 个原始样本可运行覆盖是 0/12，complete gold 与 A 类维护者均为 0。项目没有为了跑通
+1.0.1 语料修改产品代码，并已根据决策 0004 停止产品化。
 
 ## 角色与使用情景
 

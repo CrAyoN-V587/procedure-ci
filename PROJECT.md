@@ -1,24 +1,25 @@
 # Procedure CI
 
-状态：严格 MVP 已实现；M5a 语料筛选已完成，功能扩展仍冻结
+状态：严格 MVP 与 M5b 已完成；停止产品化，保留 0.1.0 为研究/作品集工具
 类型：P2 开发者工具 / Agent 工程
 开始日期：2026-08-29
 最近更新：2026-08-31
-时间箱：严格 MVP 已完成；下一阶段只给 M5 研究与回放 20–30 小时上限，不含新功能开发
+时间箱：严格 MVP 已完成；M5 在 fast-fail 后提前收尾，不再安排新功能开发
 
 ## 30 秒上下文
 
 一句话目标：把 OpenAPI 变更映射到受影响的 Arazzo workflow/step，输出确定性、可定位、可供 PR 审阅的影响报告。
 
-当前阶段：M5a 已从 15 个候选中保留 12 个可还原历史变化，覆盖 2 个独立维护源。
-保留样本全部属于 B/C 类 Arazzo 1.0.1 生成资产；独立 A 类维护者和相对现有
-validator/generator/oasdiff 的增量价值仍未验证。
+当前阶段：M5b 已按冻结协议完成代表性对照。12 个样本全部属于 B/C 类 Arazzo 1.0.1
+生成资产，当前 CLI 原始样本可运行覆盖为 0/12；complete gold 和已验证 A 类维护者均为 0。
+技术缝隙存在，但相对 validator/generator/oasdiff 的产品增量没有得到可运行证据。
 
-下一步唯一动作：开始 M5b，先对 [M5a 保留的 12 个样本](docs/M5-CORPUS.md) 独立建立
-gold set，然后运行生成器/Arazzo validator/oasdiff 基线。不为跑通 1.0.1 样本修改产品代码。
+下一步：无计划内产品开发。只维护现有 0.1.0；若用户或维护者主动提供符合 A 类资格且位于
+既定 OpenAPI 3.1 + Arazzo 1.1.x 边界内的样本，再按 [M5b 冻结协议](docs/M5-GOLD.md)
+做只读回放并重新评审 G1。
 
-最近验证：2026-08-31 通过 GitHub API 核对 12 个保留样本的完整 parent/head SHA、
-OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结果见“验证证据”。
+最近验证：2026-08-31 在 gold 提交后运行 Redocly 2.49.0、oasdiff 1.30.0、Pachca
+generator 与当前 CLI 的代表性基线；实现代码未变更，结果见 [M5b 对照](docs/M5-BASELINES.md)。
 
 ## 问题和价值
 
@@ -68,7 +69,7 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 - [x] 悬空 operation、无效 example、无法解析的 runtime output 分别产生稳定诊断和源码位置。
 - [x] JSON 输出具有版本化 schema；Markdown 报告能从变化定位到 workflow、step、依赖路径和建议动作。
 - [x] 从 2 个独立维护源筛出 12 个可还原历史变化。
-- [ ] 在运行工具前为保留样本完成独立 gold set。
+- [x] 在运行工具前冻结代表性 gold，并披露 PCH-01 的预冻结污染；因 0 个 complete 样本停止正式指标。
 - [ ] 至少找到 2 个 A 类维护者，且在 3 个样本中证明相对 validator/generator/oasdiff 的增量
   step-level 决策价值；否则只按学习项目收尾。
 
@@ -80,8 +81,8 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 - [x] M3（1–2 周）：完成 example、security、step output/runtime expression 的确定性检查。
 - [x] M4（1 周）：稳定 JSON/Markdown 报告和退出码；Action 示例延期。
 - [x] M5a（5–7 小时上限）：15 个候选按 A/B/C/D 分类，保留 12 个可还原 diff；未修改产品代码。
-- [ ] M5b（10–14 小时）：人工 gold set、现有工具基线和 Procedure CI 对照回放。
-- [ ] M5c（3–5 小时）：联系至少 3 个维护者，争取 2 个独立 A 类样本；通过 G1 后才设计下一功能。
+- [x] M5b（fast-fail）：代表性 gold、现有工具基线和 Procedure CI 覆盖探针；未修改产品代码。
+- [x] G1（停止）：0/12 原始样本可运行、0 complete gold、0 A 类维护者，不进入 M5c 或下一功能。
 
 ## 技术和环境
 
@@ -111,10 +112,14 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 - 完成 2026-08-31 第三次专项调研，增加公开 corpus 分层、竞品对照和继续投资门槛。
 - 完成 M5a：15 个候选、12 个可还原 parent/head 对、2 个独立维护源，并单独记录
   当前 MVP 可直接回放数为 0。
+- 完成 M5b：gold 先以提交 `e535370` 冻结；运行 Redocly、oasdiff、Pachca generator 和
+  Procedure CI 代表性基线；记录 Speakeasy registry 为 `blocked_external_auth`。
+- 接受决策 0004：停止产品化，不实现新的兼容、adapter、Action 或服务层。
 
-当前阻塞：
+停止依据：
 
-- 尚未找到两个独立、人工或混合维护多步 Arazzo 的 A 类维护者；
+- 已验证 A 类维护者为 0；
+- Procedure CI 对 12 个原始样本均未完成分析，无法计算 precision/recall；
 - 尚未证明 step-impact 相对现有 validator、generator 自动同步和 oasdiff 的增量审阅价值；
 - 当前实现只接受 Arazzo 1.1.x、单 OpenAPI source 和同步 operationId 子集；公开语料大量使用
   1.0.1、多 source 或非标准表达式，但这些缺口不能在需求门槛前自动转为功能任务。
@@ -123,13 +128,14 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 
 下一步：
 
-- 先做 M5b 人工 gold set，冻结标签后再运行基线；不修改产品代码。M5c 的维护者
-  联系属于外部消息，本轮未执行。
+- 无计划内开发；维护现有 0.1.0。M5c 外部联系未执行，也不在停止后为凑门槛发送消息。
 
 仓库状态：
 
 - 公开仓库：`https://github.com/CrAyoN-V587/procedure-ci`；本地 `main` 通过 HTTPS `origin`
   跟踪 `origin/main`。上传和验证工作流见 `AGENTS.md` 的“GitHub 上传工作流”。
+- 2026-08-31 的 M5b gold、对照基线与停止决策已按普通提交推送到 `main`；推送后再次核对
+  仓库为 public、默认分支为 `main`，本地 `HEAD` 与远程 `main` 一致。
 
 ## 关键决策
 
@@ -144,6 +150,7 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 | GitHub 仓库采用 public、main 和 HTTPS origin | 与同工作区公开开发者工具保持一致，便于审阅和作品集展示 | 2026-08-30 |
 | 生成/策展 Arazzo 只作对照，不按文件数计算用户 | Pachca、Speakeasy 和 API Evangelist 证明语料存在，但维护方式与独立生产采用不同 | 2026-08-31 |
 | 用独立维护者和对照回放约束功能扩展 | validator、generator 和 oasdiff 已覆盖相邻能力；未证明增量价值前不做 1.0、多 source、adapter 或 Action | 2026-08-31 |
+| M5b fast-fail 后停止产品化 | 0/12 原始样本可运行、0 complete gold、0 A 类维护者；先扩兼容再验证会倒置证据门槛 | 2026-08-31 |
 
 ## 验证证据
 
@@ -162,23 +169,25 @@ OpenAPI/Arazzo 路径和 head Arazzo 规模；实现代码未变更，回归结�
 | 2026-08-31 | 公开语料与历史 | GitHub code search、API Evangelist #205、Pachca/Paygentic/Bank API 文件和提交历史 | 找到真实漂移与大量语料；但语料高度集中于策展或生成流程，不能证明独立用户规模 |
 | 2026-08-31 | M5a 语料筛选 | 核对 15 个候选的 commit、路径、Arazzo 版本和资产规模 | 保留 12 个可还原历史对，来自 2 个独立源；均为 B/C 类 1.0.1 资产，当前 MVP 可直接回放数为 0 |
 | 2026-08-31 | M5a 文档与回归 | GitHub API 核对、本地 Markdown 链接检查、公开文本扫描、`git diff --check`、`pip check`、Ruff、pytest | 12/12 样本的 parent 和变更路径匹配；12 个 Markdown 本地链接缺失 0；凭据/个人绝对路径匹配 0；依赖、Ruff 和格式检查通过；40 项 pytest 通过 |
+| 2026-08-31 | M5b 对照与停止评审 | gold 独立提交；Redocly 2.49.0、oasdiff 1.30.0、上游 generator、原始 CLI 与版本标记探针 | 原始覆盖 0/12；oasdiff 能发现 API 变化但不映射 step；带自动重建标记的 PAY-05 历史 head 仍保留 stale operation，Registry run 未执行；正式指标不可计算，决策停止产品化 |
 
 ## 暂停检查点
 
 - 当前分支：`main`，跟踪 `origin/main`；远程为
   `https://github.com/CrAyoN-V587/procedure-ci.git`。
-- 最近功能里程碑：`242fbf6`（严格 MVP）；当前恢复入口以已推送的 `origin/main` 和本文档为准。
+- 最近功能里程碑：`242fbf6`（严格 MVP）；最近研究冻结点：`e535370`（M5b gold）。
 - 不能丢失的本地数据：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md`、
-  `docs/M5-CORPUS.md` 和决策记录。
-- 临时假设：目标用户愿意维护 Arazzo，并认为 step-level 影响报告比通用 OpenAPI diff 更有价值。
-- 恢复时第一步：阅读 `PROJECT.md`、`docs/M5-CORPUS.md`、`docs/DESIGN.md` 和决策 0003；
-  对 12 个保留样本先做独立 gold set，不修改产品代码。
+  `docs/M5-CORPUS.md`、`docs/M5-GOLD.md`、`docs/M5-BASELINES.md` 和决策记录。
+- 未验证假设：目标用户愿意维护 Arazzo，并认为 step-level 影响报告比通用 OpenAPI diff
+  更有价值；该假设不再作为继续投资依据。
+- 恢复时第一步：阅读 `PROJECT.md`、`docs/M5-BASELINES.md`、`docs/DESIGN.md` 和决策 0004；
+  默认只维护 0.1.0，不恢复已停止的功能路线。
 
 ## 已知限制和后续
 
 - Arazzo 1.1 于 2026-05 发布，生态增长快但公开资产高度集中；文件数不等于独立采用。
-- 如果没有 2 个独立 A 类维护者，项目降级为 `arazzo-impact-lab`。
-- 如果 validator + generator + oasdiff 已覆盖维护者需要的决策，不再建设独立产品。
-- 如果真实样本要求先实现完整 resolver、runner 或 condition evaluator，停止扩展标准范围。
-- 只有通过 G1 后才单独设计 Arazzo 1.0、多 source、oasdiff adapter 或 GitHub Action；
+- 由于没有 2 个独立 A 类维护者，项目已按研究/作品集工具收尾。
+- validator + generator + oasdiff 的层间仍有缝隙，但尚未证明本项目能提供增量用户决策。
+- 不为真实样本先实现完整 resolver、runner 或 condition evaluator，也不扩展标准范围。
+- 只有新的合格 A 类证据重新通过 G1 后，才单独设计 Arazzo 1.0、多 source、oasdiff adapter 或 GitHub Action；
   Skill renderer、Dashboard、服务端和真实 API 执行不在当前路线。

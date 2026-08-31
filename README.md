@@ -19,8 +19,8 @@ base/head OpenAPI + current Arazzo
 
 ## 当前状态
 
-- 状态：严格 MVP 核心已实现；M5a 已固定 12 个可还原历史变化，但均来自生成/
-  自动重建的 Arazzo 1.0.1 资产，功能扩展仍冻结；
+- 状态：严格 MVP 与 M5b 对照已完成；12 个历史样本均来自生成/自动重建的 Arazzo 1.0.1
+  资产，当前 CLI 原始样本覆盖 0/12，已停止产品化并保留 0.1.0 为研究/作品集工具；
 - 入口：三输入 `base OpenAPI + head OpenAPI + 当前 Arazzo`；
 - 输出：稳定 JSON/Markdown，退出码 `0`（无确定错误）、`1`（确定错误）、`2`（输入/工具失败）；
 - 边界：离线、只读、内部 `$ref`、OpenAPI 3.1、Arazzo 1.1.x 的 operationId 同步子集；
@@ -64,10 +64,13 @@ Webhook onboarding 夹具覆盖无关变化、嵌套引用、必填字段、认�
 - [docs/RESEARCH.md](docs/RESEARCH.md)：竞品、需求证据和立项判断；
 - [docs/DESIGN.md](docs/DESIGN.md)：架构、数据模型、CLI、验收和风险；
 - [docs/M5-CORPUS.md](docs/M5-CORPUS.md)：M5a 候选语料、精确历史边界、分层与 M5b 恢复入口；
+- [docs/M5-GOLD.md](docs/M5-GOLD.md)：M5b 代表性 gold、污染披露、资格矩阵和指标边界；
+- [docs/M5-BASELINES.md](docs/M5-BASELINES.md)：generator/validator/oasdiff 对照、角色场景和停止评审；
 - [docs/PROGRESS.md](docs/PROGRESS.md)：可恢复的实现进度和实际验证记录；
 - [docs/decisions/0001-use-arazzo.md](docs/decisions/0001-use-arazzo.md)：采用 Arazzo、放弃自定义 IR 的决策。
 - [docs/decisions/0002-three-input-current-arazzo.md](docs/decisions/0002-three-input-current-arazzo.md)：固定三输入和当前 Arazzo 语义的决策。
 - [docs/decisions/0003-gate-expansion-on-independent-pilots.md](docs/decisions/0003-gate-expansion-on-independent-pilots.md)：用独立维护者和对照回放约束功能扩展。
+- [docs/decisions/0004-stop-productization-after-m5b-fast-fail.md](docs/decisions/0004-stop-productization-after-m5b-fast-fail.md)：M5b fast-fail 后停止产品化的决策。
 
 ## License
 

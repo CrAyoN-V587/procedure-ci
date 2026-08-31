@@ -6,8 +6,8 @@
 
 - 目标：把 OpenAPI 变更映射为受影响的 Arazzo workflow/step，并生成可审阅的 CI 报告。
 - 核心入口：`PROJECT.md`、`docs/RESEARCH.md`、`docs/DESIGN.md`。
-- 当前阶段：严格 MVP 核心已实现；2026-08-31 重调研后冻结功能扩展，只做 M5 独立语料、
-  竞品对照和维护者验证，不自动把公开 corpus 的兼容缺口转为功能。
+- 当前阶段：严格 MVP 和 M5b fast-fail 已完成；决策 0004 已停止产品化，项目进入维护状态。
+  不自动把公开 corpus 的兼容缺口转为功能。
 
 ## 环境和命令
 
@@ -51,9 +51,9 @@
 
 ## 修改边界
 
-- 当前允许：更新研究/设计、建立不含第三方原始数据的候选语料清单、人工 gold set、运行现有
-  validator/generator/oasdiff 基线，以及用现有 CLI 做只读回放。
-- 当前不允许：在 G1 前修改产品代码；尤其不增加 Arazzo 1.0、多 source、oasdiff adapter、
+- 当前允许：修复 0.1.0 已有范围内的确定性 bug、更新研究/设计，以及对主动提供的合格 A 类
+  样本做只读回放。
+- 当前不允许：在新的 G1 决策前扩展产品代码；尤其不增加 Arazzo 1.0、多 source、oasdiff adapter、
   GitHub Action、FastAPI 服务、数据库、Dashboard、生产 API 执行、AsyncAPI、外部 `$ref`、
   多仓库、Skill 市场或同步层。
 - 不自造工作流 DSL；当前实现的流程输入是 Arazzo 1.1.x 已验证子集。
